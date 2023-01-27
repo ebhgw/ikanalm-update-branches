@@ -1,0 +1,40 @@
+# Ant
+ant/
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+target/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# IDEA
+*.iws
+*.ipr
+*.iml
+.idea/
+out/
+
+*.DS_Store
+*~
+*.class
+
+*.save
+.*.swp
+/bin
+user.gradle
+/.settings
+*.classpath
+*.project
+/antext
+all.properties
+Exercise*.groovy
+
+
+

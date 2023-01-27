@@ -1,0 +1,79 @@
+apply plugin: 'groovy'
+
+group 'it.zebco'
+version '2.0.0'
+
+/*
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy', 'src/main/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+
+    test {
+        groovy {
+            srcDirs = ['src/test/groovy','src/test/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+}
+ */
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'D:/Workspace/IKAN-PHASE/libs'
+    }
+    maven {
+        name = 'almRepoLocal'
+        url = "file://D:/Workspace/IKAN-PHASE/mvn_repo"
+    }
+}
+
+dependencies {
+    implementation 'org.codehaus.groovy:groovy-all:3.0.13'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
+    implementation 'ch.qos.logback:logback-classic:1.1.2'
+    //implementation 'it.zebco.alm:alm-psidao:1.0.0'
+    implementation 'org.apache.ant:ant:1.9.3'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-exec
+    implementation 'org.apache.commons:commons-exec:1.3'
+    testImplementation 'org.spockframework:spock-core:1.0-groovy-2.4'
+    // required for having a real svn server to test against
+    testImplementation "org.testcontainers:spock:1.17.6"
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Common Utils',
+                'Implementation-Version': version
+    }
+    baseName = 'svn-adapter'
+    from {
+        (configurations.runtime - configurations.provided).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    } {
+        exclude "**/Exercise*.*"
+    }
+    with jar
+}
+
+// show stdout when executing test. Other methods available
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
