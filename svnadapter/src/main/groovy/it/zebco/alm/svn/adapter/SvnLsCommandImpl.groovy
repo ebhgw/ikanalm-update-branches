@@ -1,6 +1,5 @@
 package it.zebco.alm.svn.adapter
 
-
 import groovy.util.logging.Slf4j
 import it.zebco.alm.model.ProjectStreamInfo
 
@@ -17,8 +16,8 @@ class SvnLsCommandImpl implements SvnLsCommand {
         args << "ls" << checkUri << "--depth" << "empty"
         args << "--no-auth-cache" << "--non-interactive"
         args << "--username" << "test" << "--password" << "TestP4ss"
-        log.debug "Svn command args: $args"
-        println "Svn command args: $args"
+        log.debug "Executing svn ${args.join(' ')}"
+        println "Executing svn ${args.join(' ')}"
         SvnCommand svnCmd = new SvnCommand()
         svnCmd.execute(args) == 0
     }

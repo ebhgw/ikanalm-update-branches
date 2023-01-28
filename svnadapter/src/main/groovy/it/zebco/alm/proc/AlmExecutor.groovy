@@ -1,26 +1,17 @@
-package it.zebco.alm.svn.adapter
+package it.zebco.alm.proc
 
 import org.apache.commons.exec.CommandLine
-import org.apache.commons.exec.DefaultExecutor
 import org.apache.commons.exec.DefaultExecuteResultHandler
+import org.apache.commons.exec.DefaultExecutor
 import org.apache.commons.exec.ExecuteWatchdog
 import org.apache.commons.exec.Executor
 
-/**
- * SvnCommand is a wrapper for executing a "svn" command
- */
-class SvnCommand {
+class AlmExecutor {
 
-    String svnHome
     String cmd
 
-    SvnCommand() {
-        svnHome = System.getenv('SVN_HOME')
-        cmd = svnHome?svnHome + '/svn':'svn'
-    }
-
     /**
-     * Runs "svn" and its args
+     * Runs "cmd" and its args
      *
      * @param arguments to svn command provided as a list of strings
      * @return the exit value of command execution
@@ -41,6 +32,5 @@ class SvnCommand {
         resultHandler.waitFor()
         resultHandler.exitValue
     }
+
 }
-
-
