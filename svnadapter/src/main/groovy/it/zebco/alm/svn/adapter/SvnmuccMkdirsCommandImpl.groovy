@@ -36,7 +36,8 @@ class SvnmuccMkdirsCommandImpl  {
      * @return the complete created url
      */
     def mkDirs(String baseUrl, String dirs) {
-        assert svn.exists(baseUrl)
+        assert svn.exists(baseUrl):"baseUrl $baseUrl does not exists"
+        log.debug("mkdirs: $baseurl exists")
         String current = baseUrl // accumulator
         def dirsList = dirs.split('/')
         log.debug "Mkdirs on ${dirList}"
@@ -65,7 +66,7 @@ class SvnmuccMkdirsCommandImpl  {
                 // def svnmuccCmd = "${info.commandPath}/svnmucc -U ${baseUrl} mkdir ${dir} -u ${info.user} -p ${info.password} --no-auth-cache -m \"add ${dir} under ${baseUrl}\""
                 List<String> args = []
                 args << "-U" << baseUrl << "mkdir" << dir << "-u" << "test" << "-p"
-                        << "TestP4ss" << "--no-auth-cache" << "-m" << "add ${dir} under ${baseUrl}"
+                        << "TestP4ss" << "--no-auth-cache" << "--non-interactive" << "-m" << "\"add ${dir} under ${baseUrl}\""
                 log.debug "Executing svnmucc ${args.join(' ')}"
                 svnmuccCmd.execute(args) == 0
             }

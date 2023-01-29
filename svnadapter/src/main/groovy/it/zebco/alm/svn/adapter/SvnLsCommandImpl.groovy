@@ -17,8 +17,21 @@ class SvnLsCommandImpl implements SvnLsCommand {
         args << "--no-auth-cache" << "--non-interactive"
         args << "--username" << "test" << "--password" << "TestP4ss"
         log.debug "Executing svn ${args.join(' ')}"
-        println "Executing svn ${args.join(' ')}"
         SvnCommand svnCmd = new SvnCommand()
-        svnCmd.execute(args) == 0
+        svnCmd.execute(args)
+        int exitValue = svnCmd.exitValue
+        if (exitValue == 1) {
+            // look for W160013: URL '...' non-existent in revision ?
+            // ow throw exception
+            if (!svnCmd.baos =~ /W160013/)  {
+                String errMsg = """svn ${args.join(' ')}
+${svnCmd.baos}
+"""
+                throw new SvnAdapterException(errMsg)
+            }
+
+        }
+        log.debug "Result ${exitValue}, ${exitValue == 0}"
+        exitValue == 0
     }
 }
