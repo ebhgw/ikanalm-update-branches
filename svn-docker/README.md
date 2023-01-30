@@ -5,11 +5,25 @@ Lightweight container providing an SVN server, based on **Alpine Linux** and S6 
 The access to the server is possible via **WebDav protocol** (http://), and via **custom protocol** (svn://).
 A complete tutorial on how to build this image, and how to run the container is available on [Medium](https://medium.com/@elle.florio/the-svn-dockerization-84032e11d88d#.bafh3otmh)
 Original github repository at https://github.com/elleFlorio/svn-docker
+Some changes to repository directory in order to allow r/w to Apache2 (via mod_dav)
 
 # Running Commands
+To create the image image
+```
+docker build -t ebomitali/local-svn-server .
+```
 To run the image, you can use the following command:
 ```
-docker run -d --name svn-server -p 80:80 -p 3690:3690 -v <hostpath>:/home/svn -v svn_config:/etc/subversion -v svnadmin_config:/opt/svnadmin/data elleflorio/svn-server
+docker run -d --name svn-server -p 8088:80 -p 3690:3690 --name svn-server ebomitali/local-svn-server
+```
+To stop and cleaun
+```
+docker ps && docker stop <container> && dockeer rm <container> && docker image rm <image>
+```
+
+Original suggestion following command:
+```
+docker run -d --name svn-server -p 8088:80 -p 3690:3690 -v <hostpath>:/home/svn -v svn_config:/etc/subversion -v svnadmin_config:/opt/svnadmin/data elleflorio/svn-server
 ```
 `/home/svn` stores your repositories and can use either bind mount or named volume. `/etc/subversion` stores subversion configuration and `/opt/svnadmin/data` stores SVNADMIN configuration and both **MUST** use named volume.
 

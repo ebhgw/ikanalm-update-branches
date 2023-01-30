@@ -3,6 +3,7 @@ FROM smebberson/alpine-base:3.2.0
 
 	# Install Apache2 and other stuff needed to access svn via WebDav
 	# Install svn
+	# Create a root repository folder and set permissions needed by Apache2
 	# Installing utilities for SVNADMIN frontend
 	# Create required folders
 	# Create the authentication file for http access
@@ -14,6 +15,8 @@ RUN apk add --no-cache apache2 apache2-utils apache2-webdav mod_dav_svn &&\
 	sed -i 's/;extension=ldap/extension=ldap/' /etc/php7/php.ini &&\
 	mkdir -p /run/apache2/ &&\
 	mkdir /home/svn/ &&\
+	chown -R apache:www-data /home/svn/ &&\
+	chmod -R g+ws /home/svn/ &&\
 	mkdir /etc/subversion &&\
 	touch /etc/subversion/passwd &&\
 	htpasswd -b /etc/subversion/passwd test TestP4ss &&\
@@ -42,7 +45,7 @@ RUN chmod a+w /etc/subversion/* && chmod a+w /home/svn
 ADD dav_svn.conf /etc/apache2/conf.d/dav_svn.conf
 
 # Create a test repository, create a local workcopy to create la structure
-RUN svnadmin create /home/svn/test
+RUN svnadmin create /home/svn/test && chown -R apache:www-data /home/svn/test
 RUN mkdir /tmp/test &&\
     cd /tmp/test &&\
     svn checkout file:///home/svn/test . &&\
