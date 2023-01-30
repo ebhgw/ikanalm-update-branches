@@ -1,7 +1,9 @@
-package it.zebco.alm.svn
+package it.zebco.alm.svn.service
 
 import groovy.io.FileType
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class SvnUpdatesImpl implements SvnUpdates {
 
     List<Tuple> upds = new ArrayList<Tuple>()
@@ -10,16 +12,36 @@ class SvnUpdatesImpl implements SvnUpdates {
         upds.add(new Tuple(path, relPath, relDir))
     }
 
+    /**
+     * Remove root from full and return the relative path
+     * so that root + relativeUrl == full
+     *
+     * @param root
+     * @param full
+     * @return
+     */
     def getRelativeUrl(root, full) {
         root.toPath().relativize(full.toPath()).toString().replaceAll('\\\\', '/')
     }
 
+    /**
+     * Remove leaf if <filename>.<ext>
+     *
+     * @param relPath
+     * @return relPath - leaf
+     */
     String removeLeafFilename(String relPath) {
         relPath - ~/\/(\w+[.]\w+)$/
     }
 
+    /**
+     * Collect files under a root directory and accumulates to "upds" instance var
+     * a tuple with (file fullpath, relative path, parent path)
+     *
+     * @param fromDir
+     * @return
+     */
     def collectUpdates(File fromDir) {
-        //println "collecting from ${fromDir.absolutePath}"
         fromDir.eachFileRecurse(FileType.FILES) {
             it ->
                 //println "collecting ${it}"
@@ -28,8 +50,13 @@ class SvnUpdatesImpl implements SvnUpdates {
         }
     }
 
+    /**
+     * Extract directories (path without leaf)
+     *
+     * @return a new list
+     */
     def getDirectories() {
-        upds.collect { it[2] }.unique(false)
+        upds.collect { it[2].toString() }.unique(false)
     }
 
     def getFiles() {
@@ -43,7 +70,5 @@ class SvnUpdatesImpl implements SvnUpdates {
         }
         println "=============="
     }
-
-
 }
 
