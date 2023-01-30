@@ -9,21 +9,22 @@ import org.apache.commons.exec.PumpStreamHandler
 
 /**
  * SvnCommand is a wrapper for executing a "svn" command
+ * Keep output for further analyzing
  */
-class SvnCommand {
+class SvnCommandExecutor {
 
     String svnHome
     String cmd
     ByteArrayOutputStream baos = new ByteArrayOutputStream()
     int exitValue
 
-    SvnCommand() {
+    SvnCommandExecutor(String cmd) {
         svnHome = System.getenv('SVN_HOME')
-        cmd = svnHome?svnHome + '/bin/svn':'svn'
+        this.cmd = svnHome?svnHome + "/bin/${cmd}":cmd
     }
 
     /**
-     * Runs "svn" and its args
+     * Runs a svn command and its args and saves output to further investigation
      *
      * @param arguments to svn command provided as a list of strings
      * @return the exit value of command execution
