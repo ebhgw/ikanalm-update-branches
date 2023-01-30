@@ -8,11 +8,18 @@ import it.zebco.alm.model.ProjectStreamInfo
  * Implements mkdirs command on svn using svnmucc
  */
 @Slf4j
-@InheritConstructors
-class SvnmuccMkdirsCommandImpl  {
+class SvnmuccMkdirsCommandImpl {
+    String repoRootUrl
+    String username
+    String password
+    SvnLsCommandImpl svn
 
-    SvnmuccCommand svnmuccCmd = new SvnmuccCommand()
-    SvnLsCommandImpl svn = new SvnLsCommandImpl()
+    SvnmuccMkdirsCommandImpl(String repoRootUrl, String username, String password) {
+        this.repoRootUrl = repoRootUrl
+        this.username = username
+        this.password = password
+        this.svn = new SvnLsCommandImpl(repoRootUrl, username, password)
+    }
 
     // http://ws001sc1-00-alm.rmasede.grma.net:18088/svn/IKALM_REHOST_SIGEA/JA01SIGE/Reference
     // jmodel/GP£64T02.jmodel
@@ -31,18 +38,18 @@ class SvnmuccMkdirsCommandImpl  {
     /**
      * Create needed directories on target svn path. Mimic mkdirs shell command on svn repo
      *
-     * @param current, the path under which we create directories
-     * @param dirs, a path to be created (dir1/dir2/...)
+     * @param current , the path (relative to root of repo) under which we create directories
+     * @param dirs , a path to be created (dir1/dir2/...)
      * @return the complete created url
      */
     def mkDirs(String baseUrl, String dirs) {
-        assert svn.exists(baseUrl):"baseUrl $baseUrl does not exists"
-        log.debug("mkdirs: $baseurl exists")
+        log.debug("mkdirs ${baseUrl}, ${dirs}")
+        assert svn.exists(baseUrl): "baseUrl $baseUrl does not exists"
+        log.debug("mkdirs: baseUrl exists")
         String current = baseUrl // accumulator
         def dirsList = dirs.split('/')
-        log.debug "Mkdirs on ${dirList}"
         dirsList.each {
-            def match = it =~ /(\w+[.]\w+)/ //assume that pippo.caio is a leaf file
+            def match = it =~ /(\w+[.]\w+)/  //assume that pippo.caio is a leaf file
             if (!match && it) {
                 mkDir(current, it)
                 current = current + '/' + it
@@ -54,25 +61,33 @@ class SvnmuccMkdirsCommandImpl  {
     /**
      * Create directory under url if not exists
      *
-     * @param baseUrl, the path under which we create directories
-     * @param dir, the directocy to create
+     * @param current , the path under which we create directories
+     * @param dir , the directocy to create
      * @return the created url
      */
-    def mkDir(String baseUrl, String dir) {
-        log.debug "mkdir baseUrl: $baseUrl, dir: $dir"
+    def mkDir(String current, String dir) {
+        log.debug "mkdir repoRootUrl: ${repoRootUrl} baseUrl: ${current}, dir: ${dir}"
         if (dir != '') {
-            if (!svn.exists(baseUrl + '/' + dir)) {
+            if (!svn.exists(current + '/' + dir)) {
                 log.debug "mkdir $dir as do not exists"
-                // def svnmuccCmd = "${info.commandPath}/svnmucc -U ${baseUrl} mkdir ${dir} -u ${info.user} -p ${info.password} --no-auth-cache -m \"add ${dir} under ${baseUrl}\""
                 List<String> args = []
-                args << "-U" << baseUrl << "mkdir" << dir << "-u" << "test" << "-p"
-                        << "TestP4ss" << "--no-auth-cache" << "--non-interactive" << "-m" << "\"add ${dir} under ${baseUrl}\""
+                args << "-U" << "${repoRootUrl}/${current}" << "mkdir" << dir
+                        << "-u" << username << "-p" << password << "--no-auth-cache" << "--non-interactive"
+                        << "-m" << "\"add ${dir} under ${current}\""
                 log.debug "Executing svnmucc ${args.join(' ')}"
-                svnmuccCmd.execute(args) == 0
+                SvnCommandExecutor svnmuccExecutor = new SvnCommandExecutor('svnmucc')
+                svnmuccExecutor.execute(args)
+                int exitValue = svnmuccExecutor.exitValue
+                if (exitValue == 1) {
+                    String errMsg = """svnmucc ${args.join(' ')}
+${svnmuccExecutor.baos}
+"""
+                    throw new SvnAdapterException(errMsg)
+                }
             }
-            baseUrl + '/' + dir
+            current + '/' + dir
         } else {
-            baseUrl
+            current
         }
     }
 }
