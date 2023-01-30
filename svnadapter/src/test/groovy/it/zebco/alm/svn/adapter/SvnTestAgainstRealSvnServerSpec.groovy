@@ -6,30 +6,33 @@ import org.testcontainers.utility.DockerImageName
 import spock.lang.Shared
 import spock.lang.Specification
 
-@Testcontainers
 class SvnTestAgainstRealSvnServerSpec extends Specification {
+    private static final host = 'localhost'
+    private static final port = 8088
 
-    // init, expose port of the container
-    @Shared
-    GenericContainer testSvnServer = new GenericContainer<>(DockerImageName.parse("ebomitali/local-svn-server"))
-            .withExposedPorts(80, 3690)
-
-    void setup() {
-        // Assume that we have Redis running locally?
-        //host = testSvnServer.host
-        //port = testSvnServer.firstMappedPort
-    }
-
-    def "check svn ls on an existing directory" (String path, boolean res) {
+    def "Use svn ls to check path existence" (String path, boolean res) {
         given:
-        String host = testSvnServer.host
-        int port = testSvnServer.firstMappedPort
-        SvnLsCommand ls = new SvnLsCommandImpl()
+        String repoRootUrl = "http://${host}:${port}/svn/test"
+        //String repoRootUrl, String username, String password
+        SvnLsCommand ls = new SvnLsCommandImpl(repoRootUrl, 'test', 'TestP4ss')
         expect:
         ls.exists(path) == res
         where:
         path | res
-        "http://${host}:${port}/svn/test/branches/correttiva"|true
-        "http://${host}:${port}/svn/test/branches/inexistent"|false
+        "branches/correttiva"|true
+        "branches/inexistent"|false
+    }
+
+    def "Check svn ls raising errors" () {
+        given:
+        String repoRootUrl = "http://${host}:${port}/svn/test"
+        //String repoRootUrl, String username, String password
+        SvnLsCommand ls = new SvnLsCommandImpl(repoRootUrl, 'unknown', 'unknown')
+        when:
+        ls.exists('branches/correttiva')
+        then:
+        final SvnAdapterException rte = thrown(SvnAdapterException)
+        // errorcode for wrong password
+        rte.message =~ /E170013/
     }
 }
