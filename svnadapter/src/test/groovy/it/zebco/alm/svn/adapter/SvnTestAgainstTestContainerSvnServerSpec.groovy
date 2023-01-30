@@ -63,7 +63,7 @@ class SvnTestAgainstTestContainerSvnServerSpec extends Specification {
         path|res|check
         'newdir1'|'branches/newdir1'|true
         'newdir2/newdir3'|'branches/newdir2/newdir3'|true
-        'nedir4/pippo.caio'|'branches/newdir4'|true
+        'newdir4/pippo.caio'|'branches/newdir4'|true
     }
 
     boolean checkHelper (String dirs) {
