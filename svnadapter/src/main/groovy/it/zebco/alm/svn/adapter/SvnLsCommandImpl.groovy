@@ -39,7 +39,7 @@ class SvnLsCommandImpl implements SvnLsCommand {
             log.debug "Check for error codes in ${svnCmd.baos}"
             log.debug "Match ${svnCmd.baos =~ /W160013/ as boolean}"
             if (svnCmd.baos =~ /W160013/) {
-                log.debug("Matched W160013, path does not exists") //pòath does not exists
+                log.debug("Matched W160013, path does not exist") //pòath does not exists
             } else {
                 log.debug "Failure due to runtime errors"
                 String errMsg = """svn ${args.join(' ')}

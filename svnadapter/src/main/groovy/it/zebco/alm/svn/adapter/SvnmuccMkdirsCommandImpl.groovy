@@ -44,7 +44,7 @@ class SvnmuccMkdirsCommandImpl {
      */
     def mkDirs(String baseUrl, String dirs) {
         log.debug("mkdirs ${baseUrl}, ${dirs}")
-        assert svn.exists(baseUrl): "baseUrl $baseUrl does not exists"
+        assert svn.exists(baseUrl): "baseUrl $baseUrl does not exist"
         log.debug("mkdirs: baseUrl exists")
         String current = baseUrl // accumulator
         def dirsList = dirs.split('/')
@@ -69,7 +69,7 @@ class SvnmuccMkdirsCommandImpl {
         log.debug "mkdir repoRootUrl: ${repoRootUrl} baseUrl: ${current}, dir: ${dir}"
         if (dir != '') {
             if (!svn.exists(current + '/' + dir)) {
-                log.debug "mkdir $dir as do not exists"
+                log.debug "mkdir $dir as does not exist"
                 List<String> args = []
                 args << "-U" << "${repoRootUrl}/${current}" << "mkdir" << dir
                         << "-u" << username << "-p" << password << "--no-auth-cache" << "--non-interactive"
