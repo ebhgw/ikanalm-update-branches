@@ -41,11 +41,10 @@ class SvnLsCommandImpl implements SvnLsCommand {
             if (svnCmd.baos =~ /W160013/) {
                 log.debug("Matched W160013, path does not exist") //pòath does not exists
             } else {
-                log.debug "Failure due to runtime errors"
+                log.debug "Failure due to runtime errors: " + svnCmd.baos
                 String errMsg = """svn ${args.join(' ')}
 ${svnCmd.baos}
 """
-                log.debug "Throwing exception"
                 throw new SvnAdapterException(errMsg)
             }
         }

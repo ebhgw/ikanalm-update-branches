@@ -31,7 +31,7 @@ class SvnTestAgainstTestContainerSvnServerSpec extends Specification {
         this.repoRootUrl = "http://${host}:${port}/svn/test"
     }
 
-    def "check svn ls on an existing directory" (String path, boolean res) {
+    def "Check svn ls on an existing directory" (String path, boolean res) {
         given:
         SvnLsCommand ls = new SvnLsCommandImpl(this.repoRootUrl, this.username, this.password)
         expect:
@@ -54,6 +54,11 @@ class SvnTestAgainstTestContainerSvnServerSpec extends Specification {
         rte.message =~ /E170013/
     }
 
+    boolean checkHelper (String dirs) {
+        SvnLsCommand ls = new SvnLsCommandImpl(repoRootUrl, this.username, this.password)
+        ls.exists(dirs)
+    }
+
     def "Create some directories" (String path, String res) {
         given:
         SvnmuccMkdirsCommandImpl mucc = new SvnmuccMkdirsCommandImpl(this.repoRootUrl, this.username, this.password)
@@ -66,8 +71,38 @@ class SvnTestAgainstTestContainerSvnServerSpec extends Specification {
         'newdir4/pippo.caio'|'branches/newdir4'|true
     }
 
-    boolean checkHelper (String dirs) {
-        SvnLsCommand ls = new SvnLsCommandImpl(repoRootUrl, this.username, this.password)
-        ls.exists(dirs)
+    def "Put a file via svnmucc" (Map info, String path, int exit) {
+        given:
+        SvnmuccPutCommandImpl mucc = new SvnmuccPutCommandImpl()
+        File temp = File.createTempFile("tmp", ".txt");
+        temp.deleteOnExit();
+        temp << "text file"
+        expect:
+        mucc.put(info, temp, path) == exit
+        where:
+        info|path|exit
+        [username:'test', password:'TestP4ss']|'http://localhost:8088/svn/test/branches/note.txt'|0
+        [username:'test', password:'TestP4ss', baseUrl:'http://localhost:8088/svn/test/branches' ]|'note2.txt'|0
     }
+
+    def "Raise excpetion on wrong parameters" () {
+        given:
+        SvnmuccPutCommandImpl mucc = new SvnmuccPutCommandImpl()
+        File temp = File.createTempFile("tmp", ".txt");
+        temp.deleteOnExit();
+        temp << "text file"
+
+        when:
+        mucc.put(info, temp, path) == res
+
+        then:
+        def error = thrown(expectedException)
+        // error.message == may check message
+
+        where:
+        info | path | expectedException
+        [username:'test', password:'TestP4ss'] | 'http://localhost:8088/svn/test/inexistent/note3.txt' | SvnAdapterException
+        [username:'test', password:'TestPass'] | 'http://localhost:8088/svn/test/branches/note3.txt' | SvnAdapterException
+    }
+
 }
