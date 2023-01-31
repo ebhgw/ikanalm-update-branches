@@ -45,7 +45,7 @@ RUN chmod a+w /etc/subversion/* && chmod a+w /home/svn
 ADD dav_svn.conf /etc/apache2/conf.d/dav_svn.conf
 
 # Create a test repository, create a local workcopy to create la structure
-RUN svnadmin create /home/svn/test && chown -R apache:www-data /home/svn/test
+RUN svnadmin create /home/svn/test && chown -R apache:www-data /home/svn/test && chmod -R g+w /home/svn/test
 RUN mkdir /tmp/test &&\
     cd /tmp/test &&\
     svn checkout file:///home/svn/test . &&\
@@ -53,7 +53,9 @@ RUN mkdir /tmp/test &&\
     svn mkdir branches/correttiva &&\
     svn mkdir branches/correttiva/xmodel &&\
     svn mkdir branches/evolutiva &&\
-    svn commit -m "Add structure"
+    svn commit -m "Add structure" &&\
+    cd /tmp &&\
+    rm -rf test
 
 # Set HOME in non /root folder
 ENV HOME /home
