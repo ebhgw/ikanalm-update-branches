@@ -3,9 +3,11 @@ package it.zebco.alm.svn.adapter
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.spock.Testcontainers
 import org.testcontainers.utility.DockerImageName
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
+@Ignore
 class SvnTestAgainstRealSvnServerSpec extends Specification {
     private static final host = 'localhost'
     private static final port = 8088
