@@ -3,8 +3,14 @@ package it.zebco.alm.svn.service
 import groovy.io.FileType
 import groovy.util.logging.Slf4j
 
+/**
+ * Collect file under a directory returing
+ * - absolute path
+ * - relative path to the collection directory
+ * - relative dir
+ */
 @Slf4j
-class SvnUpdatesImpl implements SvnUpdates {
+class FileUpdatesImpl implements FileUpdates {
 
     List<Tuple> upds = new ArrayList<Tuple>()
 

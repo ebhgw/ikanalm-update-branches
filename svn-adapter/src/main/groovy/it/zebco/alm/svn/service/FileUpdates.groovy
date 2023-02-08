@@ -3,7 +3,7 @@ package it.zebco.alm.svn.service
 This class should be removed and the new UpdItem implementation should be used
  */
 
-interface SvnUpdates {
+interface FileUpdates {
 
     // raccoglie gli update
     def collectUpdates(File fromDir)

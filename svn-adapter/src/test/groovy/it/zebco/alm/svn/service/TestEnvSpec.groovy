@@ -2,7 +2,7 @@ package it.zebco.alm.svn.service
 
 import spock.lang.Specification
 
-class SvnTestEnvSpec extends Specification {
+class TestEnvSpec extends Specification {
 
     def setup () {
         println System.getenv('TEST')

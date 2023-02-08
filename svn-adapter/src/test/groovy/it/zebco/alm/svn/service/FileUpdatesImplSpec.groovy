@@ -1,20 +1,18 @@
 package it.zebco.alm.svn.service
 
-import spock.lang.Shared
+
 import spock.lang.Specification
 import spock.lang.TempDir
 
-import java.nio.file.Paths
-
-class SvnUpdatesImplSpec extends Specification {
-    @TempDir File tempDir
+class FileUpdatesImplSpec extends Specification {
+    @TempDir File tempDir //will cleanup upon exit
     FileTreeBuilder treeBuilder
 
     def setup () {
         treeBuilder = new FileTreeBuilder(tempDir)
     }
 
-    def "test file collect one file" () {
+    def "file collect for one file" () {
         given:
         //final FileTreeBuilder treeBuilder = new FileTreeBuilder(tempDir)
         treeBuilder.dir('src') {
@@ -24,7 +22,7 @@ class SvnUpdatesImplSpec extends Specification {
                '''.stripIndent()
             }
         }
-        SvnUpdatesImpl upd = new SvnUpdatesImpl()
+        FileUpdatesImpl upd = new FileUpdatesImpl()
         String tempDirOnSlash = tempDir.toString().replaceAll('\\\\', '/')
         when:
         upd.collectUpdates(tempDir)
@@ -56,7 +54,7 @@ class SvnUpdatesImplSpec extends Specification {
                 }
             }
         }
-        SvnUpdatesImpl upd = new SvnUpdatesImpl()
+        FileUpdatesImpl upd = new FileUpdatesImpl()
         when:
         upd.collectUpdates(tempDir)
         def res = upd.getFiles().collect{it.get(1).toString()}.sort()
@@ -72,7 +70,7 @@ class SvnUpdatesImplSpec extends Specification {
                 dir('java')
             }
         }
-        SvnUpdatesImpl upd = new SvnUpdatesImpl()
+        FileUpdatesImpl upd = new FileUpdatesImpl()
         when:
         upd.collectUpdates(tempDir)
         def res = upd.upds
