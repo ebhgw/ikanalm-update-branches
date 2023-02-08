@@ -1,27 +1,31 @@
 package it.zebco.ikan.alm.model.dao
 
+import it.zebco.ikan.alm.model.dao.h2.H2ProjectDAO
 import it.zebco.ikan.alm.model.dao.h2.H2ProjectStreamInfoDAO
 import it.zebco.ikan.alm.model.ProjectStreamInfo
+import org.flywaydb.core.Flyway
 import spock.lang.Shared
 import spock.lang.Specification
 
 class H2ProjectStreamInfoDAOSpec extends Specification {
-    @Shared h2dao = new H2ProjectStreamInfoDAO([dbUrl: "jdbc:h2:mem:psidao;DB_CLOSE_DELAY=-1",dbUser: "sa",dbPassword: "",dbDriver: "org.h2.Driver"])
+    private static final dbUser="sa"
+    private static final dbPassword=""
+    private static final dbUrl= "jdbc:h2:mem:psidao;DB_CLOSE_DELAY=-1;MODE=MSSQLServer"
+    private static final dbDriver = "org.h2.Driver"
+    @Shared H2ProjectStreamInfoDAO h2dao = new H2ProjectStreamInfoDAO(dbUrl, dbUser, dbPassword, dbDriver)
 
     // insert data (usually the database would already contain the data)
     def setupSpec() {
-        println "initting db"
-        h2dao.init()
+        Flyway flyway = Flyway.configure().dataSource(dbUrl, dbUser, dbPassword).loggers("auto").load();
+        flyway.migrate();
     }
 
     def cleanupSpec() {
-        println "closing db"
         h2dao.close()
     }
 
     def "findBranchByPrefix on nobranch returns no row" () {
         when:
-        println "first test"
         ProjectStreamInfo res = h2dao.findBranchByPrefix('SS01OTX', 'nobranch')
         then:
         res == null
@@ -74,7 +78,7 @@ class H2ProjectStreamInfoDAOSpec extends Specification {
         rows[0].buildSuffix != rows[1].buildSuffix
     }
 
-    def "releaseBranchBySuffix does not returns a row" () {
+    def "releaseBranchBySuffix does not returns a row when branch status is 0" () {
         when: "Query a given branch on release, branch status 0"
         ProjectStreamInfo row = h2dao.releaseBranchBySuffix('SIGEOTX', 'SIGE1709')
         then: "returns 0 size result set"
@@ -91,7 +95,7 @@ class H2ProjectStreamInfoDAOSpec extends Specification {
         row.status == 5
     }
 
-    def "findReleaseBranchBySuffix does not returns a row" () {
+    def "findReleaseBranchBySuffix does not returns a row when branch status is 0" () {
         when: "Query a given branch on release, branch status 0"
         ProjectStreamInfo row = h2dao.findReleaseBranchBySuffix('SIGEOTX', 'SIGE1709')
         then: "returns 0 size result set"

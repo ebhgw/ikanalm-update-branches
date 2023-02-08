@@ -2,6 +2,8 @@ package it.zebco.ikan.alm.model.dao
 
 import groovy.sql.Sql
 import it.zebco.ikan.alm.model.Project
+import it.zebco.ikan.alm.model.ProjectStreamInfo
+import it.zebco.ikan.alm.model.dao.factory.Queries
 
 trait ProjectDAOTrait implements ProjectDAO {
 
@@ -18,11 +20,11 @@ trait ProjectDAOTrait implements ProjectDAO {
      * @param buildPrefix
      * @return the ProjectStreamInfo with given prefix (Baseline, correttiva, Reference)
      */
-    public Project projectsByRepo (String repoName) {
+    public List<Project> projectsByRepo (String repoName) {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
-        sql.firstRow(QueryFactory.projectOnRepo, [repoName]).collect { new Project(it) }
+        sql.rows(Queries.projectOnRepo, [repoName]).collect { it -> new Project(it) }
     }
 
     void close() {

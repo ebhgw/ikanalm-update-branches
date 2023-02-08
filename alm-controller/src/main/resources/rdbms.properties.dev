@@ -1,0 +1,7 @@
+rdbms.server=ITSVIL
+rdbms.driver=net.sourceforge.jtds.jdbc.Driver
+rdbms.user=EY00018
+rdbms.password=IknAlm18
+rdbms.dbname=IKALM_APP
+rdbms.port=1433
+rdbms.url=jdbc:jtds:sqlserver://${rdbmsServer}:${rdbmsPort}/${rdbmsDbname}

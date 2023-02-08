@@ -1,0 +1,91 @@
+import it.zebco.alm.controller.UpdController
+import groovy.sql.Sql
+import org.gradle.api.GradleException
+
+
+defaultTasks 'updateEvoBranches'
+
+// load properties
+apply from: 'almProperties.gradle'
+
+buildscript {
+    dependencies {
+        classpath files("libs/alm-upd-1.0.0.jar")
+    }
+}
+
+String svnCommandPath
+if (project.hasProperty('svn.command.path')) {
+    svnCommandPath = project.properties['svn.command.path']
+} else {
+    throw new GradleException("Property svn.command.path is not defined. Plese define in machine parameters")
+}
+
+def commitText = project.'svn.commit.text'
+assert commitText != '' && commitText != null: 'commitText is empty or null'
+project.ext['svn.commit.text'] = paramSlurper.slurp(commitText)
+def includePattern = project.hasProperty("includes") ? project.getProperty("includes") : ''
+def excludePattern = project.hasProperty("excludes") ? project.getProperty("excludes") : ''
+def fromDir = project.properties['source']
+fromDir = paramSlurper.slurp(fromDir)
+File working = new File(fromDir.concat('/.working'))
+// ===== ========= =====
+
+/**
+ * Isolate sources into a dedicated working directory
+ */
+task cpIntoWorkingDir(type: Copy, overwrite: true) {
+
+    from(fromDir) {
+        if (includePattern) {
+            includePattern.split(',').each {
+                include it
+            }
+        }
+    }
+    exclude '.gradle/**'
+    exclude 'com.ikanalm.*/**'
+    exclude 'com.res.*/**'
+    exclude 'it.hogwart.*/**'
+    exclude 'it.zebco.*/**'
+    exclude '**/*.log'
+    exclude "${working.name}/**"
+    if (excludePattern) {
+        excludePattern.split(',').each {
+            exclude it
+        }
+    }
+    into working
+
+    doFirst {
+        if (working.exists()) {
+            working.deleteDir()
+        }
+        working.mkdirs()
+    }
+}
+
+/**
+ * Always refer to release.project.name, Reference + suffix
+ */
+task updateEvoBranches(dependsOn: ['cpIntoWorkingDir']) {
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+    configurations {
+        jdbc
+    }
+    dependencies {
+        jdbc 'net.sourceforge.jtds:jtds:1.2.2'
+    }
+
+    doLast {
+        UpdController updCtrl = new UpdController()
+        updCtrl.init(project.properties, working.canonicalPath, configurations.jdbc)
+        updCtrl.executeUpdateOtherEvoBranches()
+    }
+}
+

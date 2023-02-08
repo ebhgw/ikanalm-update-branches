@@ -16,12 +16,9 @@ include 'services:webservice'
 */
 
 rootProject.name = 'ikan-phase-lib-2'
-include 'svnadapter'
-
-
-
-
-
-
+include 'alm-controller'
+include 'psi-dao'
+include 'svn-adapter'
+include 'update-evo-branches'
 
 

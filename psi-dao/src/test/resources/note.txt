@@ -1,0 +1,6 @@
+H2
+
+In MSSQL
+ISNULL(test,value) -> return test if not null ow value
+
+CASE test WHEN IS NULL THEN value ELSE test END

@@ -71,15 +71,16 @@ class Queries {
 
     // returns all project associated to a repo
     static String projectOnRepo = """SELECT
-prj.OID as almProjectOid,
-prj.NAME as almProjectName,
-prj.VCRPROJECTNAME as almProjectVcrProjectName,
-prj.PROJECTTYPE as almProjectType,
-ISNULL(svn.NAME,'') as almProjectVcrName,
-svn.REPOSITORYURL as svnRepositoryUrl,
-svn.REPOSITORYLAYOUT as svnRepositoryLayout
+prj.OID as project_OID,
+prj.NAME as project_NAME,
+prj.VCRPROJECTNAME as project_VCRPROJECTNAME,
+prj.PROJECTTYPE as project_PROJECTTYPE,
+ISNULL(svn.NAME,'') as vcr_NAME,
+svn.REPOSITORYURL as svn_REPOSITORYURL,
+svn.REPOSITORYLAYOUT as svn_REPOSITORYLAYOUT,
+svn.TRUNKDIRECTORY as svn_TRUNKDIRECTORY
 FROM PROJECT prj
 LEFT OUTER JOIN SUBVERSION svn ON prj.VCROID = svn.OID
 WHERE svn.NAME = ?
-AND LOCKED = 'False'"""
+AND LOCKED = False"""
 }

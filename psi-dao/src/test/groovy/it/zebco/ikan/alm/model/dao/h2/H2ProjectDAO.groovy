@@ -9,23 +9,13 @@ import org.flywaydb.core.Flyway
 @Slf4j
 class H2ProjectDAO implements ProjectDAOTrait, ProjectDAO {
 
-    // specific for testing
-    void init() {
-        String sqlTableFilePath = 'src/test/resources/h2-prj-table.sql'
-        String sqlTableString = new File(sqlTableFilePath).text
-        String sqlDataFilePath = 'src/test/resources/h2-prj-data.sql'
-        String sqlDataString = new File(sqlDataFilePath).text
-
-        if (!sql)
-            sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
-        /*
-        println "Initting"
-        sql.execute(sqlTableString)
-        println "Continue initting"
-        sql.execute(sqlDataString)
-         */
-        Flyway flyway = Flyway.configure().dataSource(dbUrl, dbUser, dbPassword).loggers("auto").load();
-        flyway.migrate();
+    H2ProjectDAO(String dbUrl, String dbUser, String dbPassword, String dbDriver) {
+        this.dbUrl = dbUrl
+        this.dbUser = dbUser
+        this.dbPassword = dbPassword
+        this.dbDriver = dbDriver
+        log.debug("Creating H2ProjectDAO $dbUrl, $dbUser, $dbPassword, $dbDriver")
+        this.sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
     }
 }
 

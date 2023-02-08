@@ -1,7 +1,9 @@
 package it.zebco.ikan.alm.model.dao.factory
 
+import groovy.util.logging.Slf4j
 import it.zebco.ikan.alm.model.dao.mssql.MssqlProjectStreamInfoDAO
 
+@Slf4j
 class MssqlProjectStreamInfoDAOFactory {
 
     MssqlProjectStreamInfoDAO getMssqlProjectStreamInfoDAO(Map props, Iterable<File> jdbcjar) {
@@ -20,11 +22,11 @@ rdbms.dbname=${dbName}<
 rdbms.user=${dbUser}<
 rdbms.password=${dbPassword ? '*****' : dbPassword}<
 rdbms.driver=${dbDriver}
-driver jar=${jdbcjar.size() == 0 ? '<empty>' : jdbcjar}
         """)
         }
         String dbUrl = "jdbc:jtds:sqlserver://${dbServer}:${dbPort}/${dbName}"
-        def dao = new MssqlProjectStreamInfoDAO(dbUrl, dbUser, dbPassword, dbDriver)
-        dao.jdbcJarLoader(jdbcjar)
+        log.debug("Creating MssqlProjectStreamInfoDAO $dbUrl, $dbUser, $dbPassword, $dbDriver")
+        new MssqlProjectStreamInfoDAO(dbUrl, dbUser, dbPassword, dbDriver)
+        //dao.jdbcJarLoader(jdbcjar)
     }
 }

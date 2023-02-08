@@ -1,0 +1,8 @@
+rdbms.server=sqlvaridatadr
+rdbms.driver=net.sourceforge.jtds.jdbc.Driver
+rdbms.user=EY00018
+rdbms.password=PA77W0RD
+rdbms.dbname=IKALM_APP
+rdbms.port=1433
+# not used yet
+rdbms.url=jdbc:jtds:sqlserver://${rdbmsServer}:${rdbmsPort}/${rdbmsDbname}

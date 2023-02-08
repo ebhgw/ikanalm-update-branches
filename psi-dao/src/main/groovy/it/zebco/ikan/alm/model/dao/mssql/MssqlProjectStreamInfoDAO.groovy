@@ -1,10 +1,12 @@
 package it.zebco.ikan.alm.model.dao.mssql
 
 import groovy.sql.Sql
+import groovy.util.logging.Slf4j
 import org.codehaus.groovy.GroovyException
 import it.zebco.ikan.alm.model.dao.ProjectStreamInfoDAO
 import it.zebco.ikan.alm.model.dao.ProjectStreamInfoDAOTrait
 
+@Slf4j
 class MssqlProjectStreamInfoDAO implements ProjectStreamInfoDAOTrait, ProjectStreamInfoDAO {
 
     /* inherited
@@ -23,6 +25,7 @@ class MssqlProjectStreamInfoDAO implements ProjectStreamInfoDAOTrait, ProjectStr
         this.dbUser = dbUser
         this.dbPassword = dbPassword
         this.dbDriver = dbDriver
+        log.debug("Creating MssqlProjectStreamInfoDAO $dbUrl, $dbUser, $dbPassword, $dbDriver")
         this.sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
     }
 

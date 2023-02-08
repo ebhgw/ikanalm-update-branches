@@ -37,6 +37,8 @@ dependencies {
     testImplementation 'org.flywaydb:flyway-core:9.8.1'
     // https://mvnrepository.com/artifact/com.h2database/h2
     testImplementation 'com.h2database:h2:2.0.206'
+    // https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc
+    testImplementation 'com.microsoft.sqlserver:mssql-jdbc:12.2.0.jre8'
     testImplementation "org.testcontainers:spock:1.17.6"
     testImplementation "org.testcontainers:mssqlserver:1.17.6"
 
@@ -53,7 +55,7 @@ test {
 // Make all tests use JUnit 5, required to recognize spock tests
 tasks.withType(Test) {
     useJUnitPlatform()
-    environment([ENVIRONMENT:"test", ACCEPT_EULA: "Y", MSSQL_SA_PASSWORD:"mssql1Ipw"])
+    environment([ENVIRONMENT:"test", ACCEPT_EULA: "Y", MSSQL_SA_PASSWORD:"mssql1Ipw", MSSQL_AGENT_ENABLED:"True"])
 }
 
 testSets {

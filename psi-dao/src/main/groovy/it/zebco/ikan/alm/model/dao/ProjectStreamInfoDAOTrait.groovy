@@ -23,7 +23,7 @@ trait ProjectStreamInfoDAOTrait implements ProjectStreamInfoDAO {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
-        sql.firstRow(QueryFactory.branchByPrefix, [almProject, buildPrefix]) as ProjectStreamInfo
+        sql.firstRow(Queries.branchByPrefix, [almProject, buildPrefix]) as ProjectStreamInfo
     }
 
     /**
@@ -35,7 +35,7 @@ trait ProjectStreamInfoDAOTrait implements ProjectStreamInfoDAO {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
-        sql.rows(QueryFactory.branchesByR02, [almProject]).collect { it -> new ProjectStreamInfo(it) }
+        sql.rows(Queries.branchesByR02, [almProject]).collect { it -> new ProjectStreamInfo(it) }
     }
 
     /**
@@ -62,7 +62,7 @@ trait ProjectStreamInfoDAOTrait implements ProjectStreamInfoDAO {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
-        sql.firstRow(QueryFactory.releaseBranchBySuffix, [almReleaseProject, buildSuffix]) as ProjectStreamInfo
+        sql.firstRow(Queries.releaseBranchBySuffix, [almReleaseProject, buildSuffix]) as ProjectStreamInfo
     }
 
     /**
@@ -75,7 +75,7 @@ trait ProjectStreamInfoDAOTrait implements ProjectStreamInfoDAO {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
-        sql.firstRow(QueryFactory.releaseBranchBySuffix, [almReleaseProject, buildSuffix]) as ProjectStreamInfo
+        sql.firstRow(Queries.releaseBranchBySuffix, [almReleaseProject, buildSuffix]) as ProjectStreamInfo
     }
 
     void close() {

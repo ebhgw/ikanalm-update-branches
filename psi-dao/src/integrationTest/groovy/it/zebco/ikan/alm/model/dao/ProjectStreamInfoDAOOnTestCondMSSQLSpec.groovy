@@ -13,32 +13,31 @@ import java.nio.file.Path
 @Testcontainers
 class ProjectStreamInfoDAOOnTestCondMSSQLSpec extends Specification {
     private final static Path DOCKER_PATH = new File('../docker-mssql').toPath()
-    private String host
-    private int port
-    @Shared
-    private ProjectStreamInfoDAO dao
-
+    @Shared private String host
+    @Shared private int port
+    @Shared private ProjectStreamInfoDAO dao
 
     /**
      * Container with MSSQL and data
      */
     @Shared
-    GenericContainer testSvnServer = new GenericContainer<>(
+    GenericContainer mssqlServer = new GenericContainer<>(
             new ImageFromDockerfile()
                     .withFileFromPath('.', DOCKER_PATH))
             .withExposedPorts(1433)
+            .withReuse(true)
 
     void setupSpec() {
-        this.host = mssqlServer.host
-        this.port = mssqlServer.firstMappedPort
-        def dbServer= this.host
+        host = mssqlServer.host
+        port = mssqlServer.firstMappedPort
+        def dbServer= host
         def dbDriver='net.sourceforge.jtds.jdbc.Driver'
         def dbUser='sa'
         def dbPassword='mssql1Ipw'
         def dbName='IKANALM'
-        def dbPort= this.port
+        def dbPort= port
         def dbUrl = "jdbc:jtds:sqlserver://${dbServer}:${dbPort}/${dbName}"
-        this.dao = new MssqlProjectStreamInfoDAO(dbUrl,dbUser,dbPassword,dbDriver) as ProjectStreamInfoDAO
+        dao = new MssqlProjectStreamInfoDAO(dbUrl, dbUser, dbPassword, dbDriver) as ProjectStreamInfoDAO
     }
 
     def "findBranchByPrefix on nobranch returns no row" () {

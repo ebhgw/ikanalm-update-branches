@@ -10,6 +10,6 @@ interface ProjectDAO {
      * @param buildPrefix
      * @return the ProjectStreamInfo with given prefix (Baseline, correttiva, Reference)
      */
-    public Project projectsByRepo (String repoName);
+    public List<Project> projectsByRepo (String repoName);
 
 }
