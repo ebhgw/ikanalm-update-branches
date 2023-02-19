@@ -3,7 +3,22 @@ package it.zebco.alm.svn.adapter
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class SvnmuccPutCommandImpl {
+class SvnmuccPutCommandImpl implements SvnmuccPutCommand {
+
+    String repoRootUrl
+    String username
+    String password
+
+    SvnmuccPutCommandImpl(String repoRootUrl, String username, String password) {
+        this.repoRootUrl = repoRootUrl
+        this.username = username
+        this.password = password
+    }
+
+    int put (File ff, String dest) {
+        put (ff, dest, "Put ${ff.name} to $dest")
+    }
+
     /**
      * Puts a file to a destination using repo, user and possword provided
      * If info contains a baseUrl, destination url is baseUrl + dest, ow est
@@ -14,19 +29,17 @@ class SvnmuccPutCommandImpl {
      * @param dest relative destination url
      * @return
      */
-    int put (Map<String, String> info, File ff, String dest) {
-        println "File is $ff"
+    int put (File ff, String dest, String message) {
         List<String> args = []
-        // does not automatically create missing directories
+        // does not automatically create missing directories, should use mkdirs
         // baseUri is dest repoUri + dest branchUri
-        String baseUrl = info.get('baseUrl', null)
-        String message = info.get('message',null)?info.get('message',null):"Put ${ff.name} to $dest"
-        if (baseUrl) {
-            args << '-U' << info.baseUrl
+        // String baseUrl = info.get('baseUrl', null)
+        if (repoRootUrl) {
+            args << '-U' << repoRootUrl
         }
         // local path - destination uri
         args << 'put' << ff.canonicalPath << dest
-        args << '-u' << info.username << '-p' << info.password << '--no-auth-cache'
+        args << '-u' << username << '-p' << password << '--no-auth-cache'
         args << '-m' << "$message"
         log.debug "Executing svnmucc ${args.join(' ')}"
         SvnCommandExecutor svnmuccCmd = new SvnCommandExecutor('svnmucc')

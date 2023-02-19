@@ -1,6 +1,13 @@
 plugins {
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
+    /*
+     * ./gradlew sonar \
+     * -Dsonar.projectKey=update-branch-ikan \
+     * -Dsonar.host.url=http://localhost:19000 \
+     * -Dsonar.login=sqp_3010790cec863ab6c4af77e787ce37db8d4dc9f6
+     */
+    id "org.sonarqube" version "3.5.0.2730"
 }
 
 group 'it.zebco'
