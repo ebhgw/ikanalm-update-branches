@@ -5,13 +5,13 @@ import it.zebco.alm.model.BuildInfo
 import it.zebco.alm.model.ProjectStreamInfo
 import it.zebco.alm.model.RepoInfo
 import it.zebco.alm.model.SvnItem
-import it.zebco.alm.model.dao.ProjectStreamInfoDAO
+import it.zebco.ikan.alm.model.dao.ProjectStreamInfoDAO
 import it.zebco.alm.model.RepoInfoFactory
 import it.zebco.alm.source.FileCollector
-import it.zebco.alm.svn.adapter.SvnAccessInfo
+import it.zebco.ikan.alm.svn.adapter.SvnAccessInfo
 import it.zebco.alm.svn.adapter.SvnAdapter
-import it.zebco.alm.svn.adapter.SvnAdapterFactory
-import it.zebco.alm.model.dao.factory.DAOFactory
+
+
 
 //assunzione, lavora su un solo repository SVN
 @Slf4j

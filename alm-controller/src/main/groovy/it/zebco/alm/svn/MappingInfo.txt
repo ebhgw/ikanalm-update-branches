@@ -1,5 +1,0 @@
-info.user = username
-info.password = password
-info.authRequired: l'operazione richiede autenticazione
-info.baseUrl: in svnmucc, l'argomento a -U (radice da cui si esegue il resto)
-info.source: in put, il path dell'oggetto da salvare

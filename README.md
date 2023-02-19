@@ -19,4 +19,9 @@ A local maven repo, default is ../lib (where current directory is where main gra
 
 Windows batch file: you may adjust configuration in setenv.bat
 
+## What
+1. colleziona i file da aggiornare
+2. collezionare i project stream attivi del progetto su build suffix R02 (evolutiva)
+3. applicare gli aggiornamenti su ogni project stream
+
 ## Status

@@ -1,14 +1,9 @@
 package it.zebco.alm.controller
 
 
-import it.zebco.alm.model.BuildInfo
 import it.zebco.alm.model.ProjectStreamInfo
 import it.zebco.alm.model.SvnItem
 import it.zebco.alm.model.dao.h2.H2ProjectStreamInfoDAO
-import it.zebco.alm.source.FileCollector
-import it.zebco.alm.svn.adapter.SvnAccessInfo
-import it.zebco.alm.svn.adapter.SvnAdapterFactory
-import it.zebco.alm.svn.adapter.SvnAdapterImpl
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
@@ -35,7 +30,7 @@ class UpdControllerSpec extends Specification {
         h2dao.close()
     }
 
-    UpdController updCtrl
+    UpdRepoOnProjectR02ProjectStreamController updCtrl
     String updDir
     List<File> jdbcjar = []
     def projectProperties = [:]
@@ -63,7 +58,7 @@ class UpdControllerSpec extends Specification {
         updDir = 'D:/Workspace/IKAN-PHASE/alm-common-3/controller/src/test/data/source/3002'
         jdbcjar << new File('D:/Workspace/IKAN-PHASE/libs/jtds-1.2.2.jar')
 
-        updCtrl = new UpdController() {
+        updCtrl = new UpdRepoOnProjectR02ProjectStreamController() {
             @Override
             ProjectStreamInfo getProjectStreamInfo(String dburl, String dbuser, String dbpass, String dbdriver, Iterable<File> jjs) {
                 dao = h2dao

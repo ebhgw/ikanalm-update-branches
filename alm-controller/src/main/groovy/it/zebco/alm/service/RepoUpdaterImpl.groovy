@@ -1,30 +1,29 @@
-package it.zebco.alm.controller
+package it.zebco.alm.service
 
+import com.google.inject.Inject
 import groovy.util.logging.Slf4j
 import it.zebco.alm.model.BuildInfo
-import it.zebco.alm.model.SvnItem
-import it.zebco.alm.model.dao.ProjectStreamInfoDAO
-import it.zebco.alm.model.dao.mssql.MssqlProjectStreamInfoDAO
 import it.zebco.alm.model.ProjectStreamInfo
+import it.zebco.alm.model.SvnItem
 import it.zebco.alm.source.FileCollector
-import it.zebco.alm.svn.adapter.SvnAccessInfo
 import it.zebco.alm.svn.adapter.SvnAdapter
-import it.zebco.alm.svn.adapter.SvnAdapterFactory
+import it.zebco.ikan.alm.model.dao.ProjectStreamInfoDAO
+import it.zebco.ikan.alm.model.dao.mssql.MssqlProjectStreamInfoDAO
 import org.codehaus.groovy.GroovyException
 
-/*
+/**
  * Pick the files from the current package, overwrite the existing files
  * on other ProjectStream evolutive with active status of the same project
- *
+ * Access singleton via SameProjectRepoUpdaterImpl.instance
  */
 @Slf4j
-class UpdController {
+@Singleton
+class SameProjectRepoUpdaterImpl implements SameProjectRepoUpdater {
 
     String almProject
     String buildPrefix
     String buildSuffix
     String commitMsg
-    SvnAccessInfo acc
     String updDir
     // map of project properties from gradle script
     Map<String, String> props
@@ -37,21 +36,30 @@ class UpdController {
     FileCollector fc
     ProjectStreamInfo owner
     //List<ProjectStreamInfo> ldest
-    ProjectStreamInfoDAO dao
-    SvnAdapter sa
+    @Inject
+    private final ProjectStreamInfoDAO dao
+    @Inject
+    private final SvnAdapter sa
     //Iterable<File> jdbcjar
 
-    // save pProps (from gradle properties), path directory with files
-    void init(Map pProps, String path, Iterable<File> jjs) {
+    /**
+     * Collect properties from gradle.properties provided by Ikan Alm and add local properties
+     * and build up context for the controller
+     * @param pProps read from gradle.properties
+     * 
+     * @param path
+     * @param jjs
+     */
+    void init(Map pProps, String path) {
 
-        log.debug("UpdController initting")
-        // prop from gradle project
+        log.debug("SameProjectRepoUpdaterImpl initting")
+
         props = pProps
         almProject = pProps.get('alm.project.name')
         buildPrefix = pProps.get('alm.projectStream.buildPrefix')
         buildSuffix = pProps.get('alm.projectStream.buildSuffix')
         assert almProject != null || almProject.length() > 0: "alm.project.name undefined or empty"
-        log.debug "using project name: $almProject, build prefix: $buildPrefix, build suffix: $buildSuffix"
+        log.debug "Using project name: $almProject, build prefix: $buildPrefix, build suffix: $buildSuffix"
 
         String dburl = "jdbc:jtds:sqlserver://${props['rdbms.server']}:${props['rdbms.port']}/${props['rdbms.dbname']}".toString()
         String dbuser = props.get('rdbms.user').toString()
@@ -66,21 +74,24 @@ class UpdController {
         updDir = path
 
         // String user, String password, String commandPath, String source, String repoName, String repoUri
-        sa = SvnAdapterFactory.getSvnAdaper(
+        /* sa = SvnAdapterFactory.getSvnAdaper(
                 pProps.get('svn.user').toString(), pProps.get('svn.password').toString(), pProps.get('svn.command.path').toString(),
                 pProps.get('source').toString(),
                 owner.repoName, owner.repoUri)
+         */
         fc = new FileCollector(new File(updDir))
 
         // get data do build owner ProjectStreamInfo
-        log.debug("UpdController init completed")
+        log.debug("SameProjectRepoUpdaterImpl init completed")
 
     }
 
-    ProjectStreamInfo getProjectStreamInfo(String dburl, String dbuser, String dbpass, String dbdriver, Iterable<File> jjs) {
+    @Override
+    void doUpdateGeneralAvailableR02(Map pProps, String path) {}
+
+    ProjectStreamInfo getProjectStreamInfo(String dburl, String dbuser, String dbpass, String dbdriver) {
 
         dao = new MssqlProjectStreamInfoDAO(dburl, dbuser, dbpass, dbdriver)
-        dao.jdbcJarLoader(jjs)
         Map row = dao.queryByPrefixSuffix(this.almProject, this.buildPrefix, this.buildSuffix)
         if (!row) {
             // null
@@ -308,5 +319,10 @@ class UpdController {
     }
 
     void cleanup() {
+    }
+
+    @Override
+    void doUpdateR02() {
+
     }
 }
