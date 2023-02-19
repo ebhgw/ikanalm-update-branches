@@ -14,4 +14,6 @@ COPY *.sh /usr/config/
 # Add sql table and data
 COPY src/main/sql/V*.sql /usr/config/db/
 
+EXPOSE 1433
+
 ENTRYPOINT ["./entrypoint.sh"]
