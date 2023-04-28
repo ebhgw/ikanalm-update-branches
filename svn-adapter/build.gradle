@@ -65,7 +65,7 @@ dependencies {
 
 task fatJar(type: Jar) {
     manifest {
-        attributes 'Implementation-Title': 'Common Utils',
+        attributes 'Implementation-Title': 'Svn Adapter',
                 'Implementation-Version': version
     }
     baseName = 'svn-adapter'
