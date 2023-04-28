@@ -27,9 +27,38 @@ class Queries {
             LEFT OUTER JOIN SUBVERSION svn ON project.VCROID = svn.OID
             WHERE project.NAME = ?"""
 
+    /**
+     * General Available Project Stream
+     */
+    static String gaProjectStreamQuery = base_select + """
+                 and projectStream.STATUS = 5
+                 """
+
+    // purpouse is to query project stream data for the current stream executing in the level
+    // Do not filter status
+    static String prefixSuffixQuery = base_select + """
+                 and projectStream.BUILDPREFIX = ?
+                 and projectStream.BUILDSUFFIX = ?
+                 """
+
     // for Baseline, Reference, correttiva, one record
-    static String branchQuery = base_select + """
+    static String prefixQuery = base_select + """
             and projectStream.BUILDPREFIX = ?
+            """
+
+    // for Baseline, Reference, correttiva, one record
+    static String gaPrefixQuery = prefixQuery + """
+            and projectStream.STATUS = 5
+            """
+
+    // for Baseline, Reference, correttiva, one record
+    static String suffixQuery = base_select + """
+            and projectStream.BUILDSUFFIX = ?
+            """
+
+    // for Baseline, Reference, correttiva, one record
+    static String gaSuffixQuery = suffixQuery + """
+            and projectStream.STATUS = 5
             """
 
     // for evolutiva, a collection of all active project stream (status = 5)

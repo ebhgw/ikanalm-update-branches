@@ -42,14 +42,14 @@ class ProjectStreamInfoDAOOnTestCondMSSQLSpec extends Specification {
 
     def "findBranchByPrefix on nobranch returns no row" () {
         when:
-        ProjectStreamInfo res = dao.findBranchByPrefix('SS01OTX', 'nobranch')
+        ProjectStreamInfo res = dao.findProjectStreamByPrefix('SS01OTX', 'nobranch')
         then:
         res == null
     }
 
     def "findBranchByPrefix on SS01OTX Baseline" () {
         when: "Query on Baseline on a branch of SS01OTX"
-        ProjectStreamInfo first = dao.findBranchByPrefix('SS01OTX', 'Baseline')
+        ProjectStreamInfo first = dao.findProjectStreamByPrefix('SS01OTX', 'Baseline')
         then: "find the project stream data"
         first.almProjectName == 'SS01OTX'
         first.vcrProjectName == 'SS01OTX'
@@ -59,7 +59,7 @@ class ProjectStreamInfoDAOOnTestCondMSSQLSpec extends Specification {
     // Look for general available state
     def "findBranchesByR02 returns a list of branches with state=5" () {
         when: "Query evolutiva branches of SS01OTX"
-        List<ProjectStreamInfo> rows = dao.findBranchesByR02('SS01OTX')
+        List<ProjectStreamInfo> rows = dao.findR02ProjectStream('SS01OTX')
         def branches = rows.collect{ it.buildPrefix }.toSorted()
         then: "returns 2 active (of 3)"
         rows.size() == 2
@@ -75,14 +75,14 @@ class ProjectStreamInfoDAOOnTestCondMSSQLSpec extends Specification {
 
     def "query releaseBranches on non existent project" () {
         when: "Query branches on non existent"
-        List<ProjectStreamInfo> rows = dao.releaseBranches('NoProject')
+        List<ProjectStreamInfo> rows = dao.releaseProjectStreamOfRealeaseProject('NoProject')
         then: "returns 0 size result set"
         rows.size() == 0
     }
 
     def "query releaseBranches on release project" () {
         when: "Query branches on release"
-        List<ProjectStreamInfo> rows = dao.releaseBranches('SIGEOTX')
+        List<ProjectStreamInfo> rows = dao.releaseProjectStreamOfRealeaseProject('SIGEOTX')
         then: "returns 0 size result set"
         rows.size() == 2
         rows[0].vcrProjectName == 'SIGEOTX'
@@ -96,14 +96,14 @@ class ProjectStreamInfoDAOOnTestCondMSSQLSpec extends Specification {
 
     def "releaseBranchBySuffix does not returns a row" () {
         when: "Query a given branch on release, branch status 0"
-        ProjectStreamInfo row = dao.releaseBranchBySuffix('SIGEOTX', 'SIGE1709')
+        ProjectStreamInfo row = dao.releaseProjectStreamBySuffix('SIGEOTX', 'SIGE1709')
         then: "returns 0 size result set"
         row == null
     }
 
     def "releaseBranchBySuffix returns a row" () {
         when: "Query a given branch on release"
-        ProjectStreamInfo row = dao.releaseBranchBySuffix('SIGEOTX', 'SIGE1801')
+        ProjectStreamInfo row = dao.releaseProjectStreamBySuffix('SIGEOTX', 'SIGE1801')
         then: "returns 1 size result set"
         row.almProjectName == 'SIGEOTX'
         row.vcrProjectName == 'SIGEOTX'

@@ -1,13 +1,13 @@
 package it.zebco.ikan.alm.model.dao
 
-import it.zebco.ikan.alm.model.dao.h2.H2ProjectDAO
+
 import it.zebco.ikan.alm.model.dao.h2.H2ProjectStreamInfoDAO
 import it.zebco.ikan.alm.model.ProjectStreamInfo
 import org.flywaydb.core.Flyway
 import spock.lang.Shared
 import spock.lang.Specification
 
-class H2ProjectStreamInfoDAOSpec extends Specification {
+class ProjectStreamInfoDAOUsingH2Spec extends Specification {
     private static final dbUser="sa"
     private static final dbPassword=""
     private static final dbUrl= "jdbc:h2:mem:psidao;DB_CLOSE_DELAY=-1;MODE=MSSQLServer"
@@ -24,16 +24,37 @@ class H2ProjectStreamInfoDAOSpec extends Specification {
         h2dao.close()
     }
 
+    def "find current project stream" (String project, String prefix, String suffix) {
+        given:
+        ProjectStreamInfo res = h2dao.findProjectStreamByProjectPrefixSuffix(project, prefix, suffix)
+        expect:
+        project == res.almProjectName
+        prefix == res.buildPrefix
+        suffix == res.buildSuffix
+        where:
+        project | prefix | suffix
+        'SS01OTX' | 'Baseline' | 'R01'
+        'SS01OTX' | 'SIGE1801' | 'R02'
+    }
+
+    def "find current project stream returns an empty row" () {
+        when:
+        ProjectStreamInfo res = h2dao.findProjectStreamByProjectPrefixSuffix('NOPRJ', 'noprefix', 'nosuffix')
+        then:
+        res == null
+    }
+
     def "findBranchByPrefix on nobranch returns no row" () {
         when:
-        ProjectStreamInfo res = h2dao.findBranchByPrefix('SS01OTX', 'nobranch')
+        List<ProjectStreamInfo> res = h2dao.findProjectStreamByPrefix('SS01OTX', 'nobranch')
+
         then:
         res == null
     }
 
     def "findBranchByPrefix on SS01OTX Baseline" () {
         when: "Query on Baseline on a branch of SS01OTX"
-        ProjectStreamInfo first = h2dao.findBranchByPrefix('SS01OTX', 'Baseline')
+        ProjectStreamInfo first = h2dao.findProjectStreamByPrefix('SS01OTX', 'Baseline')
         then: "find the project stream data"
         first.almProjectName == 'SS01OTX'
         first.vcrProjectName == 'SS01OTX'
@@ -43,7 +64,7 @@ class H2ProjectStreamInfoDAOSpec extends Specification {
     // Look for general available state
     def "findBranchesByR02 returns a list of branches with state=5" () {
         when: "Query evolutiva branches of SS01OTX"
-        List<ProjectStreamInfo> rows = h2dao.findBranchesByR02('SS01OTX')
+        List<ProjectStreamInfo> rows = h2dao.findR02ProjectStream('SS01OTX')
         def branches = rows.collect{ it.buildPrefix }.toSorted()
         then: "returns 2 active (of 3)"
         rows.size() == 2
@@ -59,14 +80,14 @@ class H2ProjectStreamInfoDAOSpec extends Specification {
 
     def "query releaseBranches on non existent project" () {
         when: "Query branches on non existent"
-        List<ProjectStreamInfo> rows = h2dao.releaseBranches('NoProject')
+        List<ProjectStreamInfo> rows = h2dao.releaseProjectStreamOfRealeaseProject('NoProject')
         then: "returns 0 size result set"
         rows.size() == 0
     }
 
     def "query releaseBranches on release project" () {
         when: "Query branches on release"
-        List<ProjectStreamInfo> rows = h2dao.releaseBranches('SIGEOTX')
+        List<ProjectStreamInfo> rows = h2dao.releaseProjectStreamOfRealeaseProject('SIGEOTX')
         then: "returns 0 size result set"
         rows.size() == 2
         rows[0].vcrProjectName == 'SIGEOTX'
@@ -80,14 +101,14 @@ class H2ProjectStreamInfoDAOSpec extends Specification {
 
     def "releaseBranchBySuffix does not returns a row when branch status is 0" () {
         when: "Query a given branch on release, branch status 0"
-        ProjectStreamInfo row = h2dao.releaseBranchBySuffix('SIGEOTX', 'SIGE1709')
+        ProjectStreamInfo row = h2dao.releaseProjectStreamBySuffix('SIGEOTX', 'SIGE1709')
         then: "returns 0 size result set"
         row == null
     }
 
     def "releaseBranchBySuffix returns a row" () {
         when: "Query a given branch on release"
-        ProjectStreamInfo row = h2dao.releaseBranchBySuffix('SIGEOTX', 'SIGE1801')
+        ProjectStreamInfo row = h2dao.releaseProjectStreamBySuffix('SIGEOTX', 'SIGE1801')
         then: "returns 1 size result set"
         row.almProjectName == 'SIGEOTX'
         row.vcrProjectName == 'SIGEOTX'

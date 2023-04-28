@@ -17,13 +17,80 @@ trait ProjectStreamInfoDAOTrait implements ProjectStreamInfoDAO {
      *
      * @param almProject
      * @param buildPrefix
-     * @return the ProjectStreamInfo with given prefix (Baseline, correttiva, Reference)
+     * @param buildSuffix
+     * @return ProjectStreamInfo
      */
-    public ProjectStreamInfo findBranchByPrefix(String almProject, String buildPrefix) {
+    public ProjectStreamInfo findProjectStreamByProjectPrefixSuffix(String almProject, String buildPrefix, String buildSuffix) {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
-        sql.firstRow(Queries.branchByPrefix, [almProject, buildPrefix]) as ProjectStreamInfo
+        sql.firstRow(Queries.prefixSuffixQuery, [almProject, buildPrefix, buildSuffix]) as ProjectStreamInfo
+    }
+
+    /**
+     *
+     * @param almProject
+     * @param buildPrefix
+     * @return the ProjectStreamInfo with given prefix (Baseline, correttiva, Reference)
+     */
+    public List<ProjectStreamInfo> findProjectStreamByPrefix(String almProject, String buildPrefix) {
+        if (!sql) {
+            sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
+        }
+        sql.rows(Queries.prefixQuery, [almProject, buildPrefix]) as ProjectStreamInfo
+    }
+
+    /**
+     *
+     * @param almProject
+     * @param buildPrefix
+     * @return the ProjectStreamInfo with given prefix (Baseline, correttiva, Reference)
+     */
+    public List<ProjectStreamInfo> findGAProjectStreamByPrefix(String almProject, String buildPrefix) {
+        if (!sql) {
+            sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
+        }
+        sql.rows(Queries.gaPrefixQuery, [almProject, buildPrefix]) as ProjectStreamInfo
+    }
+
+    /**
+     *
+     * @param almProject
+     * @param buildPrefix
+     * @return the ProjectStreamInfo with given suffix (R02 or release name for realeases)
+     */
+    public List<ProjectStreamInfo> findProjectStreamBySuffix(String almProject, String buildSuffix) {
+        if (!sql) {
+            sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
+        }
+        sql.rows(Queries.suffixQuery, [almProject, buildSuffix]) as ProjectStreamInfo
+    }
+
+    /**
+     *
+     * @param almProject
+     * @param buildPrefix
+     * @return the ProjectStreamInfo with given suffix (R02 or release name for realeases)
+     */
+    public List<ProjectStreamInfo> findGAProjectStreamBySuffix(String almProject, String buildSuffix) {
+        if (!sql) {
+            sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
+        }
+        sql.rows(Queries.gaSuffixQuery, [almProject, buildSuffix]) as ProjectStreamInfo
+    }
+
+    /**
+     * Returns projectStream of project with status GeneralAvailable
+     *
+     * @param almProject
+     * @return the ProjectStreamInfo with given prefix (Baseline, correttiva, Reference for package projecst
+     *  Release for release projects)
+     */
+    public List<ProjectStreamInfo> findGAProjectStream(String almProject) {
+        if (!sql) {
+            sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
+        }
+        sql.rows(Queries.gaProjectStreamQuery, [almProject]) as ProjectStreamInfo
     }
 
     /**
@@ -31,7 +98,7 @@ trait ProjectStreamInfoDAOTrait implements ProjectStreamInfoDAO {
      * @param almProject
      * @return the ProjectStreamInfo(s) with R02 suffix (evolutiva stream)
      */
-    public List<ProjectStreamInfo> findBranchesByR02(String almProject) {
+    public List<ProjectStreamInfo> findR02ProjectStream(String almProject) {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
@@ -43,7 +110,7 @@ trait ProjectStreamInfoDAOTrait implements ProjectStreamInfoDAO {
      * @param almReleaseProject , is a Release project
      * @return ProjectStreamInfo list with status 5 (General Available)
      */
-    public List<ProjectStreamInfo> releaseBranches(String almReleaseProject) {
+    public List<ProjectStreamInfo> releaseProjectStreamOfRealeaseProject(String almReleaseProject) {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
@@ -58,7 +125,7 @@ trait ProjectStreamInfoDAOTrait implements ProjectStreamInfoDAO {
      * @param buildSuffix
      * @return ProjectStreamInfo
      */
-    public ProjectStreamInfo releaseBranchBySuffix(String almReleaseProject, String buildSuffix) {
+    public ProjectStreamInfo releaseProjectStreamBySuffix(String almReleaseProject, String buildSuffix) {
         if (!sql) {
             sql = Sql.newInstance(dbUrl, dbUser, dbPassword, dbDriver)
         }
