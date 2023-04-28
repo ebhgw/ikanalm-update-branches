@@ -1,12 +1,13 @@
 package it.zebco.alm.svn.adapter
 
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.spock.Testcontainers
-import org.testcontainers.utility.DockerImageName
 import spock.lang.Ignore
-import spock.lang.Shared
 import spock.lang.Specification
 
+/**
+ * This should complement the TestContainer part and was developed to test container
+ * creation and configuration
+ * After container setup we don't need it anymore
+ */
 @Ignore
 class SvnTestAgainstRealSvnServerSpec extends Specification {
     private static final host = 'localhost'

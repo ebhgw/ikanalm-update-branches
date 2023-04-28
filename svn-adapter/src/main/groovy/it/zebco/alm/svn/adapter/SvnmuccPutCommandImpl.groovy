@@ -21,12 +21,12 @@ class SvnmuccPutCommandImpl implements SvnmuccPutCommand {
 
     /**
      * Puts a file to a destination using repo, user and possword provided
-     * If info contains a baseUrl, destination url is baseUrl + dest, ow est
+     * If repoRootUrl was provided when creating impl object, it is used as a base
+     * and dest is relative to the repoRootUrl, ow dest should be a complete url starting from http://...
      * Does not create missing directories in path
      *
-     * @param info, a map should contains repoUrl, username, password, optional baseUrl
      * @param ff file to load
-     * @param dest relative destination url
+     * @param dest destination url absolute if no repoRootUrl, relative if repoRootUrl is provided
      * @return
      */
     int put (File ff, String dest, String message) {

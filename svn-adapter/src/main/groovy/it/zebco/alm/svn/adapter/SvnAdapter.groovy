@@ -9,7 +9,5 @@ class SvnAdapter {
         this.lsCmd = new SvnLsCommandImpl(repoRootUrl, username, password)
         this.mkdirsCmd = new SvnmuccMkdirsCommandImpl(repoRootUrl, username, password)
         this.putCmd = new SvnmuccPutCommandImpl(repoRootUrl, username, password)
-        this.lsCmd = lsCmd
-        this.mkdirsCmd = mkdirsCmd
     }
 }
